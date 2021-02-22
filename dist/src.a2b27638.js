@@ -81084,9 +81084,7 @@ const Buffers = _ToneAudioBuffers.ToneAudioBuffers;
 exports.Buffers = Buffers;
 const BufferSource = _ToneBufferSource.ToneBufferSource;
 exports.BufferSource = BufferSource;
-},{"./core/Global":"node_modules/tone/build/esm/core/Global.js","./classes":"node_modules/tone/build/esm/classes.js","./version":"node_modules/tone/build/esm/version.js","./core/context/ToneAudioBuffer":"node_modules/tone/build/esm/core/context/ToneAudioBuffer.js","./core/context/AudioContext":"node_modules/tone/build/esm/core/context/AudioContext.js","./core/context/ToneAudioBuffers":"node_modules/tone/build/esm/core/context/ToneAudioBuffers.js","./source/buffer/ToneBufferSource":"node_modules/tone/build/esm/source/buffer/ToneBufferSource.js"}],"src/assets/01.mp3":[function(require,module,exports) {
-module.exports = "/01.9a611c21.mp3";
-},{}],"src/Deck.js":[function(require,module,exports) {
+},{"./core/Global":"node_modules/tone/build/esm/core/Global.js","./classes":"node_modules/tone/build/esm/classes.js","./version":"node_modules/tone/build/esm/version.js","./core/context/ToneAudioBuffer":"node_modules/tone/build/esm/core/context/ToneAudioBuffer.js","./core/context/AudioContext":"node_modules/tone/build/esm/core/context/AudioContext.js","./core/context/ToneAudioBuffers":"node_modules/tone/build/esm/core/context/ToneAudioBuffers.js","./source/buffer/ToneBufferSource":"node_modules/tone/build/esm/source/buffer/ToneBufferSource.js"}],"src/Deck.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81097,10 +81095,6 @@ exports.Deck = void 0;
 var _react = _interopRequireWildcard(require("react"));
 
 var Tone = _interopRequireWildcard(require("tone"));
-
-var _ = _interopRequireDefault(require("./assets/01.mp3"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -81118,7 +81112,10 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var Deck = function Deck() {
+var Deck = function Deck(_ref) {
+  var crossFadeInput = _ref.crossFadeInput,
+      sample = _ref.sample;
+
   var _useState = (0, _react.useState)(null),
       _useState2 = _slicedToArray(_useState, 2),
       player = _useState2[0],
@@ -81129,15 +81126,11 @@ var Deck = function Deck() {
       playbackRate = _useState4[0],
       setPlaybackRate = _useState4[1];
 
-  var _useState5 = (0, _react.useState)(50),
-      _useState6 = _slicedToArray(_useState5, 2),
-      volume = _useState6[0],
-      setVolume = _useState6[1];
-
   var play = function play() {
-    if (player == null) {
-      var newPlayer = new Tone.Player(_.default).toDestination();
+    if (player === null) {
+      var newPlayer = new Tone.Player(sample);
       newPlayer.autostart = true;
+      newPlayer.connect(crossFadeInput);
       setPlayer(newPlayer);
     } else {
       player.start();
@@ -81160,20 +81153,15 @@ var Deck = function Deck() {
       player.playbackRate = 0.5 + 1.5 * (event.target.value / 1000);
       setPlaybackRate(event.target.value);
     }
-  }), /*#__PURE__*/_react.default.createElement("input", {
-    type: "range",
-    min: "0",
-    max: "100",
-    value: volume,
-    onChange: function onChange(event) {
-      player.volume.value = -24 + 24 * (event.target.value / 100);
-      setVolume(event.target.value);
-    }
   }));
 };
 
 exports.Deck = Deck;
-},{"react":"node_modules/react/index.js","tone":"node_modules/tone/build/esm/index.js","./assets/01.mp3":"src/assets/01.mp3"}],"src/App.jsx":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","tone":"node_modules/tone/build/esm/index.js"}],"src/assets/01.mp3":[function(require,module,exports) {
+module.exports = "/01.9a611c21.mp3";
+},{}],"src/assets/02.mp3":[function(require,module,exports) {
+module.exports = "/02.bdeabddf.mp3";
+},{}],"src/App.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -81181,18 +81169,78 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.App = void 0;
 
-var _react = _interopRequireDefault(require("react"));
+var _react = _interopRequireWildcard(require("react"));
+
+var Tone = _interopRequireWildcard(require("tone"));
 
 var _Deck = require("./Deck");
 
+var _ = _interopRequireDefault(require("./assets/01.mp3"));
+
+var _2 = _interopRequireDefault(require("./assets/02.mp3"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 var App = function App() {
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_Deck.Deck, null));
+  var _useState = (0, _react.useState)(null),
+      _useState2 = _slicedToArray(_useState, 2),
+      crossFade = _useState2[0],
+      setCrossFade = _useState2[1];
+
+  var _useState3 = (0, _react.useState)(50),
+      _useState4 = _slicedToArray(_useState3, 2),
+      fade = _useState4[0],
+      setFade = _useState4[1];
+
+  var initCrossFade = function initCrossFade() {
+    if (crossFade === null) {
+      var newCrossFade = new Tone.CrossFade(0.5).toDestination();
+      setCrossFade(newCrossFade);
+    }
+  };
+
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("button", {
+    onClick: function onClick() {
+      if (crossFade === null) {
+        initCrossFade();
+      }
+    }
+  }, "START"), crossFade && /*#__PURE__*/_react.default.createElement(_Deck.Deck, {
+    crossFadeInput: crossFade.a,
+    sample: _.default
+  }), crossFade && /*#__PURE__*/_react.default.createElement(_Deck.Deck, {
+    crossFadeInput: crossFade.b,
+    sample: _2.default
+  }), /*#__PURE__*/_react.default.createElement("input", {
+    type: "range",
+    min: "0",
+    max: "100",
+    value: fade,
+    onChange: function onChange(event) {
+      crossFade.fade.value = event.target.value / 100;
+      setFade(event.target.value);
+    }
+  }));
 };
 
 exports.App = App;
-},{"react":"node_modules/react/index.js","./Deck":"src/Deck.js"}],"src/index.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","tone":"node_modules/tone/build/esm/index.js","./Deck":"src/Deck.jsx","./assets/01.mp3":"src/assets/01.mp3","./assets/02.mp3":"src/assets/02.mp3"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -81232,7 +81280,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41679" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42155" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
