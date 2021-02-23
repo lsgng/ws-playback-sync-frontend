@@ -3,22 +3,46 @@ import * as Tone from 'tone'
 
 export const Deck = ({ crossFadeInput, sample }) => {
     const [player, setPlayer] = useState(null)
+    const [loaded, setLoaded] = useState(false)
     const [playbackRate, setPlaybackRate] = useState(500)
 
-    const play = () => {
+    const [lastStarted_MS, setLastStarted_MS] = useState(Date.now())
+    const [lastStartPoint_MS, setLastStartPoint_MS] = useState(0)
+
+    useEffect(() => {
         if (player === null) {
-            const newPlayer = new Tone.Player(sample)
-            newPlayer.autostart = true
+            const newPlayer = new Tone.Player()
             newPlayer.connect(crossFadeInput)
             setPlayer(newPlayer)
-        } else {
-            player.start()
         }
+
+        if (player !== null && !loaded) {
+            player.load(sample).then(() => {
+                setLoaded(true)
+            })
+        }
+    })
+
+    const play = () => {
+        player.start()
+        setLastStarted_MS(Date.now())
+        setLastStartPoint_MS(0)
+    }
+
+    const forward = (offset_MS) => {
+        let now_MS = Date.now()
+        const timePlayed_MS = now_MS - lastStarted_MS + lastStartPoint_MS
+        const seekPosition_MS = timePlayed_MS + offset_MS
+        player.seek(seekPosition_MS / 1000, Tone.now())
+        setLastStarted_MS(now_MS)
+        setLastStartPoint_MS(seekPosition_MS)
     }
 
     return (
         <div>
-            <button onClick={play}>PLAY</button>
+            <button disabled={!loaded} onClick={play}>
+                PLAY
+            </button>
             <button
                 disabled={player == null}
                 onClick={() => {
@@ -38,6 +62,22 @@ export const Deck = ({ crossFadeInput, sample }) => {
                     setPlaybackRate(event.target.value)
                 }}
             ></input>
+            <button
+                disabled={player === null}
+                onClick={() => {
+                    forward(25)
+                }}
+            >
+                &gt;
+            </button>
+            <button
+                disabled={player === null}
+                onClick={() => {
+                    forward(100)
+                }}
+            >
+                &gt;&gt;
+            </button>
         </div>
     )
 }

@@ -81121,23 +81121,57 @@ var Deck = function Deck(_ref) {
       player = _useState2[0],
       setPlayer = _useState2[1];
 
-  var _useState3 = (0, _react.useState)(500),
+  var _useState3 = (0, _react.useState)(false),
       _useState4 = _slicedToArray(_useState3, 2),
-      playbackRate = _useState4[0],
-      setPlaybackRate = _useState4[1];
+      loaded = _useState4[0],
+      setLoaded = _useState4[1];
 
-  var play = function play() {
+  var _useState5 = (0, _react.useState)(500),
+      _useState6 = _slicedToArray(_useState5, 2),
+      playbackRate = _useState6[0],
+      setPlaybackRate = _useState6[1];
+
+  var _useState7 = (0, _react.useState)(Date.now()),
+      _useState8 = _slicedToArray(_useState7, 2),
+      lastStarted_MS = _useState8[0],
+      setLastStarted_MS = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(0),
+      _useState10 = _slicedToArray(_useState9, 2),
+      lastStartPoint_MS = _useState10[0],
+      setLastStartPoint_MS = _useState10[1];
+
+  (0, _react.useEffect)(function () {
     if (player === null) {
-      var newPlayer = new Tone.Player(sample);
-      newPlayer.autostart = true;
+      var newPlayer = new Tone.Player();
       newPlayer.connect(crossFadeInput);
       setPlayer(newPlayer);
-    } else {
-      player.start();
     }
+
+    if (player !== null && !loaded) {
+      player.load(sample).then(function () {
+        setLoaded(true);
+      });
+    }
+  });
+
+  var play = function play() {
+    player.start();
+    setLastStarted_MS(Date.now());
+    setLastStartPoint_MS(0);
+  };
+
+  var forward = function forward(offset_MS) {
+    var now_MS = Date.now();
+    var timePlayed_MS = now_MS - lastStarted_MS + lastStartPoint_MS;
+    var seekPosition_MS = timePlayed_MS + offset_MS;
+    player.seek(seekPosition_MS / 1000, Tone.now());
+    setLastStarted_MS(now_MS);
+    setLastStartPoint_MS(seekPosition_MS);
   };
 
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("button", {
+    disabled: !loaded,
     onClick: play
   }, "PLAY"), /*#__PURE__*/_react.default.createElement("button", {
     disabled: player == null,
@@ -81153,7 +81187,17 @@ var Deck = function Deck(_ref) {
       player.playbackRate = 0.5 + 1.5 * (event.target.value / 1000);
       setPlaybackRate(event.target.value);
     }
-  }));
+  }), /*#__PURE__*/_react.default.createElement("button", {
+    disabled: player === null,
+    onClick: function onClick() {
+      forward(25);
+    }
+  }, ">"), /*#__PURE__*/_react.default.createElement("button", {
+    disabled: player === null,
+    onClick: function onClick() {
+      forward(100);
+    }
+  }, ">>"));
 };
 
 exports.Deck = Deck;
@@ -81280,7 +81324,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42155" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36391" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
