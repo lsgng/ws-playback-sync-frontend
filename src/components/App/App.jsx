@@ -17,8 +17,7 @@ export const App = () => {
                 setConnected(true)
             }
             newSocket.onmessage = (msg) => {
-                console.log(msg)
-                if (msg.data === 'register') {
+                if (JSON.parse(msg.data).body === 'register') {
                     setRegistered(true)
                 }
             }
