@@ -44,37 +44,42 @@ export const App = () => {
         }
     }
 
-    return !connected ? (
-        <h1>Connecting to server...</h1>
-    ) : (
-        <div>
-            <button
-                onClick={() => {
-                    if (crossFade === null) {
-                        initCrossFade()
-                    }
-                    registerClient()
-                }}
-            >
-                Start
-            </button>
-            {crossFade !== null && registered && (
-                <Deck crossFadeInput={crossFade.a} sample={sample_01} />
-            )}
-            {crossFade !== null && registered && (
-                <Deck crossFadeInput={crossFade.b} sample={sample_02} />
-            )}
-            {crossFade !== null && registered && (
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={fade}
-                    onChange={(event) => {
-                        crossFade.fade.value = event.target.value / 100
-                        setFade(event.target.value)
+    return (
+        <div className="app_container">
+            {!connected && <h1>Connecting to server...</h1>}
+
+            {connected && !registered && (
+                <button
+                    className="app_button_start"
+                    onClick={() => {
+                        if (crossFade === null) {
+                            initCrossFade()
+                        }
+                        registerClient()
                     }}
-                ></input>
+                >
+                    Start
+                </button>
+            )}
+
+            {crossFade !== null && registered && (
+                <div className="app_deck_container">
+                    <div className="app_decks">
+                        <Deck crossFadeInput={crossFade.a} sample={sample_01} />
+                        <Deck crossFadeInput={crossFade.b} sample={sample_02} />
+                    </div>
+                    <input
+                        className="slider"
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={fade}
+                        onChange={(event) => {
+                            crossFade.fade.value = event.target.value / 100
+                            setFade(event.target.value)
+                        }}
+                    ></input>
+                </div>
             )}
         </div>
     )

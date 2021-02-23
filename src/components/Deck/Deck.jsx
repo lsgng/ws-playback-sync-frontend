@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import * as Tone from 'tone'
+import './Deck.css'
 
 export const Deck = ({ crossFadeInput, sample }) => {
     const [player, setPlayer] = useState(null)
     const [loaded, setLoaded] = useState(false)
-    const [playbackRate, setPlaybackRate] = useState(500)
 
     const [lastStarted_MS, setLastStarted_MS] = useState(Date.now())
     const [lastStartPoint_MS, setLastStartPoint_MS] = useState(0)
@@ -39,45 +39,45 @@ export const Deck = ({ crossFadeInput, sample }) => {
     }
 
     return (
-        <div>
-            <button disabled={!loaded} onClick={play}>
-                PLAY
-            </button>
-            <button
-                disabled={player == null}
-                onClick={() => {
-                    player.stop()
-                }}
-            >
-                STOP
-            </button>
-            <input
-                type="range"
-                min="0"
-                max="1000"
-                value={playbackRate}
-                onChange={(event) => {
-                    player.playbackRate =
-                        0.5 + 1.5 * (event.target.value / 1000)
-                    setPlaybackRate(event.target.value)
-                }}
-            ></input>
-            <button
-                disabled={player === null}
-                onClick={() => {
-                    forward(25)
-                }}
-            >
-                &gt;
-            </button>
-            <button
-                disabled={player === null}
-                onClick={() => {
-                    forward(100)
-                }}
-            >
-                &gt;&gt;
-            </button>
+        <div className="deck">
+            <div>
+                <button
+                    className="deck_button_play"
+                    disabled={!loaded}
+                    onClick={play}
+                >
+                    Play
+                </button>
+                <button
+                    className="deck_button_stop"
+                    disabled={player == null}
+                    onClick={() => {
+                        player.stop()
+                    }}
+                >
+                    Stop
+                </button>
+            </div>
+            <div>
+                <button
+                    className="deck_button_forward"
+                    disabled={player === null}
+                    onClick={() => {
+                        forward(25)
+                    }}
+                >
+                    +25 ms
+                </button>
+                <button
+                    className="deck_button_forward"
+                    disabled={player === null}
+                    onClick={() => {
+                        forward(100)
+                    }}
+                >
+                    +100 ms
+                </button>
+            </div>
         </div>
     )
 }
