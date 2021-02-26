@@ -27,7 +27,7 @@ export const App = () => {
 
     useEffect(() => {
         if (socket === null) {
-            const newSocket = new WebSocket('ws://localhost:1234/ws')
+            const newSocket = new WebSocket('ws://localhost:1234/websocket')
             newSocket.onopen = () => {
                 setConnected(true)
             }
@@ -45,7 +45,8 @@ export const App = () => {
     }
 
     const onMessage = (message) => {
-        const payload = JSON.parse(message.data).body
+        console.log(message)
+        const payload = message.data
         if (payload === 'register') {
             setClientRegistered(true)
         }
