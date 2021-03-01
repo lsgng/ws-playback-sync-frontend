@@ -4,11 +4,17 @@ import './App.css'
 import sample_01 from '../../assets/01.mp3'
 import sample_02 from '../../assets/02.mp3'
 import { Deck } from '../Deck/Deck'
+import Axios from 'axios'
+import axios from 'axios'
 
 export const App = () => {
-    const [socket, setSocket] = useState(null)
-    const [connected, setConnected] = useState(false)
+    const [registeringClient, setRegisteringClient] = useState(false)
     const [clientRegistered, setClientRegistered] = useState(false)
+    const [clientID, setClientID] = useState(null)
+
+    const [connectingWebsocket, setConnectingWebsocket] = useState(false)
+    const [websocketConnected, setWebsocketConnected] = useState(false)
+    const [websocket, setWebsocket] = useState(null)
 
     const [crossFade, setCrossFade] = useState(null)
     const [fade, setFade] = useState(50)
@@ -26,30 +32,35 @@ export const App = () => {
     const [lastStartPoint_MS_B, setLastStartPoint_MS_B] = useState(0)
 
     useEffect(() => {
-        if (socket === null) {
+        if (
+            websocket === null &&
+            websocketConnected === false &&
+            connectingWebsocket === false
+        ) {
+            setConnectingWebsocket(true)
             const newSocket = new WebSocket('ws://localhost:1234/websocket')
             newSocket.onopen = () => {
-                setConnected(true)
+                setConnectingWebsocket(false)
+                setWebsocketConnected(true)
             }
             newSocket.onmessage = onMessage
-            setSocket(newSocket)
+            setWebsocket(newSocket)
         }
 
         return () => {
-            socket.close()
+            websocket.close()
         }
     }, [])
 
     const registerClient = () => {
-        socket.send('register')
+        setRegisteringClient(true)
+        websocket.send('register')
     }
 
     const onMessage = (message) => {
         console.log(message)
         const payload = message.data
-        if (payload === 'register') {
-            setClientRegistered(true)
-        }
+
         if (payload === 'play_A') {
             play_A()
         }
@@ -62,12 +73,18 @@ export const App = () => {
         if (payload === 'stop_B') {
             player_B.stop()
         }
+
+        if (payload) {
+            setClientRegistered(true)
+            setClientID(payload)
+            console.log(payload)
+        }
     }
 
     useEffect(() => {
         // Update message callback
-        if (socket !== null) {
-            socket.onmessage = onMessage
+        if (websocket !== null) {
+            websocket.onmessage = onMessage
         }
     })
 
@@ -140,9 +157,9 @@ export const App = () => {
 
     return (
         <div className="app_container">
-            {!connected && <h1>Connecting to server...</h1>}
+            {!websocketConnected && <h1>Connecting to server...</h1>}
 
-            {connected && !clientRegistered && (
+            {websocketConnected && !clientRegistered && (
                 <button
                     className="app_button_start"
                     onClick={() => {
@@ -169,19 +186,19 @@ export const App = () => {
                             <Deck
                                 onClickForward={forward_A}
                                 onClickPlay={() => {
-                                    socket.send('play_A')
+                                    websocket.send('play_A')
                                 }}
                                 onClickStop={() => {
-                                    socket.send('stop_A')
+                                    websocket.send('stop_A')
                                 }}
                             />
                             <Deck
                                 onClickForward={forward_B}
                                 onClickPlay={() => {
-                                    socket.send('play_B')
+                                    websocket.send('play_B')
                                 }}
                                 onClickStop={() => {
-                                    socket.send('stop_B')
+                                    websocket.send('stop_B')
                                 }}
                             />
                         </div>
