@@ -54,29 +54,43 @@ export const App = () => {
 
     const registerClient = () => {
         setRegisteringClient(true)
-        websocket.send('register')
+        const registerMessage = { type: 'register' }
+        websocket.send(JSON.stringify(registerMessage))
+    }
+
+    const play = (decḱ) => {
+        const playMessage = { type: 'play', payload: deck }
+        websocket.send(JSON.stringify(playMessage))
+    }
+
+    const stop = (decḱ) => {
+        const stopMessage = { type: 'stop', payload: deck }
+        websocket.send(JSON.stringify(stopMessage))
     }
 
     const onMessage = (message) => {
         console.log(message)
         const { type, payload } = JSON.parse(message.data)
 
-        if (type === 'play_A') {
-            play_A()
-        }
-        if (type === 'play_B') {
-            play_B()
-        }
-        if (type === 'stop_A') {
-            player_A.stop()
-        }
-        if (type === 'stop_B') {
-            player_B.stop()
-        }
-
         if (type === 'registered') {
             setClientRegistered(true)
             setClientID(payload.userId)
+        }
+
+        if (type === 'play') {
+            if (payload === 1) {
+                play_A()
+            } else if (payload === 2) {
+                play_B()
+            }
+        }
+
+        if (type === 'stop') {
+            if (payload === 1) {
+                player_A.stop()
+            } else if (payload === 2) {
+                player_B.stop()
+            }
         }
     }
 
@@ -185,19 +199,19 @@ export const App = () => {
                             <Deck
                                 onClickForward={forward_A}
                                 onClickPlay={() => {
-                                    websocket.send('play_A')
+                                    play(1)
                                 }}
                                 onClickStop={() => {
-                                    websocket.send('stop_A')
+                                    stop(1)
                                 }}
                             />
                             <Deck
                                 onClickForward={forward_B}
                                 onClickPlay={() => {
-                                    websocket.send('play_B')
+                                    play(2)
                                 }}
                                 onClickStop={() => {
-                                    websocket.send('stop_B')
+                                    stop(2)
                                 }}
                             />
                         </div>
