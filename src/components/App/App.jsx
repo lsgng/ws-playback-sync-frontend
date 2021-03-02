@@ -59,25 +59,24 @@ export const App = () => {
 
     const onMessage = (message) => {
         console.log(message)
-        const payload = message.data
+        const { type, payload } = JSON.parse(message.data)
 
-        if (payload === 'play_A') {
+        if (type === 'play_A') {
             play_A()
         }
-        if (payload === 'play_B') {
+        if (type === 'play_B') {
             play_B()
         }
-        if (payload === 'stop_A') {
+        if (type === 'stop_A') {
             player_A.stop()
         }
-        if (payload === 'stop_B') {
+        if (type === 'stop_B') {
             player_B.stop()
         }
 
-        if (payload) {
+        if (type === 'registered') {
             setClientRegistered(true)
-            setClientID(payload)
-            console.log(payload)
+            setClientID(payload.userId)
         }
     }
 
