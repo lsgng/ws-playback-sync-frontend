@@ -10,7 +10,7 @@ import axios from 'axios'
 export const App = () => {
     const [registeringClient, setRegisteringClient] = useState(false)
     const [clientRegistered, setClientRegistered] = useState(false)
-    const [clientID, setClientID] = useState(null)
+    const [clientId, setClientId] = useState(null)
 
     const [connectingWebsocket, setConnectingWebsocket] = useState(false)
     const [websocketConnected, setWebsocketConnected] = useState(false)
@@ -58,13 +58,19 @@ export const App = () => {
         websocket.send(JSON.stringify(registerMessage))
     }
 
-    const play = (decḱ) => {
-        const playMessage = { type: 'play', payload: deck }
+    const play = (deck) => {
+        const playMessage = {
+            type: 'play',
+            payload: { clientId, deck: deck },
+        }
         websocket.send(JSON.stringify(playMessage))
     }
 
-    const stop = (decḱ) => {
-        const stopMessage = { type: 'stop', payload: deck }
+    const stop = (deck) => {
+        const stopMessage = {
+            type: 'stop',
+            payload: { clientId, deck: deck },
+        }
         websocket.send(JSON.stringify(stopMessage))
     }
 
@@ -74,21 +80,21 @@ export const App = () => {
 
         if (type === 'registered') {
             setClientRegistered(true)
-            setClientID(payload.userId)
+            setClientId(payload.clientId)
         }
 
         if (type === 'play') {
-            if (payload === 1) {
+            if (payload.deck === 1) {
                 play_A()
-            } else if (payload === 2) {
+            } else if (payload.deck === 2) {
                 play_B()
             }
         }
 
         if (type === 'stop') {
-            if (payload === 1) {
+            if (payload.deck === 1) {
                 player_A.stop()
-            } else if (payload === 2) {
+            } else if (payload.deck === 2) {
                 player_B.stop()
             }
         }
