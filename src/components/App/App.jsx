@@ -59,6 +59,12 @@ export const App = () => {
     }
 
     const play = (deck) => {
+        if (deck === 1) {
+            play_A()
+        } else if (deck === 2) {
+            play_B()
+        }
+
         const playMessage = {
             type: 'play',
             payload: { clientId, deck: deck },
@@ -67,6 +73,12 @@ export const App = () => {
     }
 
     const stop = (deck) => {
+        if (deck === 1) {
+            player_A.stop()
+        } else if (deck === 2) {
+            player_B.stop()
+        }
+
         const stopMessage = {
             type: 'stop',
             payload: { clientId, deck: deck },
@@ -75,7 +87,6 @@ export const App = () => {
     }
 
     const onMessage = (message) => {
-        console.log(message)
         const { type, payload } = JSON.parse(message.data)
 
         if (type === 'registered') {
