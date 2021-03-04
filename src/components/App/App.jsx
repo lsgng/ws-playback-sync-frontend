@@ -3,9 +3,7 @@ import * as Tone from 'tone'
 import './App.css'
 import sample_01 from '../../assets/01.mp3'
 import sample_02 from '../../assets/02.mp3'
-import { Deck } from '../Deck/Deck'
-import Axios from 'axios'
-import axios from 'axios'
+import { Player } from '../Player/Player'
 
 export const App = () => {
     const [registeringClient, setRegisteringClient] = useState(false)
@@ -54,58 +52,59 @@ export const App = () => {
 
     const registerClient = () => {
         setRegisteringClient(true)
-        const registerMessage = { type: 'register' }
-        websocket.send(JSON.stringify(registerMessage))
+        const registrationMessage = { type: 'registration' }
+        websocket.send(JSON.stringify(registrationMessage))
     }
 
-    const play = (deck) => {
-        if (deck === 1) {
+    const play = (player) => {
+        if (player === 1) {
             play_A()
-        } else if (deck === 2) {
+        } else if (player === 2) {
             play_B()
         }
 
         const playMessage = {
             type: 'play',
-            payload: { clientId, deck: deck },
+            payload: { clientId, player: player },
         }
         websocket.send(JSON.stringify(playMessage))
     }
 
-    const stop = (deck) => {
-        if (deck === 1) {
+    const stop = (player) => {
+        if (player === 1) {
             player_A.stop()
-        } else if (deck === 2) {
+        } else if (player === 2) {
             player_B.stop()
         }
 
         const stopMessage = {
             type: 'stop',
-            payload: { clientId, deck: deck },
+            payload: { clientId, player: player },
         }
         websocket.send(JSON.stringify(stopMessage))
     }
 
     const onMessage = (message) => {
         const { type, payload } = JSON.parse(message.data)
+        console.log(message)
 
-        if (type === 'registered') {
+        if (type === 'registrationSuccess') {
             setClientRegistered(true)
             setClientId(payload.clientId)
         }
 
         if (type === 'play') {
-            if (payload.deck === 1) {
+            if (payload.player === 1) {
                 play_A()
-            } else if (payload.deck === 2) {
+            } else if (payload.player === 2) {
                 play_B()
             }
         }
 
         if (type === 'stop') {
-            if (payload.deck === 1) {
+            if (payload.player === 1) {
                 player_A.stop()
-            } else if (payload.deck === 2) {
+            } else if (payload.player === 2) {
                 player_B.stop()
             }
         }
@@ -211,9 +210,9 @@ export const App = () => {
                 !loading_B &&
                 loaded_A &&
                 loaded_B && (
-                    <div className="app_deck_container">
-                        <div className="app_decks">
-                            <Deck
+                    <div className="app_player_container">
+                        <div className="app_players">
+                            <Player
                                 onClickForward={forward_A}
                                 onClickPlay={() => {
                                     play(1)
@@ -222,7 +221,7 @@ export const App = () => {
                                     stop(1)
                                 }}
                             />
-                            <Deck
+                            <Player
                                 onClickForward={forward_B}
                                 onClickPlay={() => {
                                     play(2)

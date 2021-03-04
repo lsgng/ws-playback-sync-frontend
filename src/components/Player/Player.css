@@ -1,4 +1,4 @@
-.deck {
+.player {
     border: 1px solid lightgray;
     display: flex;
     flex-direction: column;
@@ -6,7 +6,7 @@
     padding: 5px;
 }
 
-.deck_button_play {
+.player_button_play {
     background-color: green;
     border: none;
     border-radius: 4px;
@@ -22,7 +22,7 @@
     margin: 10px;
 }
 
-.deck_button_stop {
+.player_button_stop {
     background-color: red;
     border: none;
     border-radius: 4px;
@@ -38,7 +38,7 @@
     margin: 10px;
 }
 
-.deck_button_forward {
+.player_button_forward {
     background: white;
     border: 1px solid lightgrey;
     border-radius: 4px;

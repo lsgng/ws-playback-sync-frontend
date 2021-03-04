@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import './Deck.css'
+import React from 'react'
+import './Player.css'
 
-export const Deck = ({ onClickPlay, onClickStop, onClickForward }) => {
+export const Player = ({ onClickPlay, onClickStop, onClickForward }) => {
     return (
-        <div className="deck">
+        <div className="player">
             <div>
-                <button className="deck_button_play" onClick={onClickPlay}>
+                <button className="player_button_play" onClick={onClickPlay}>
                     Play
                 </button>
-                <button className="deck_button_stop" onClick={onClickStop}>
+                <button className="player_button_stop" onClick={onClickStop}>
                     Stop
                 </button>
             </div>
             <div>
                 <button
-                    className="deck_button_forward"
+                    className="player_button_forward"
                     onClick={() => {
                         onClickForward(25)
                     }}
@@ -22,7 +22,7 @@ export const Deck = ({ onClickPlay, onClickStop, onClickForward }) => {
                     +25 ms
                 </button>
                 <button
-                    className="deck_button_forward"
+                    className="player_button_forward"
                     onClick={() => {
                         onClickForward(100)
                     }}
