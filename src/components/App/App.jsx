@@ -56,21 +56,32 @@ export const App = () => {
         websocket.send(JSON.stringify(registrationMessage))
     }
 
-    const play = (player) => {
-        if (player === 1) {
-            play_A()
-        } else if (player === 2) {
-            play_B()
-        }
-
+    const handleClickPlay = (player) => {
+        const timestamp = Date.now()
+        play(player, timestamp)
         const playMessage = {
             type: 'play',
-            payload: { clientId, player: player },
+            payload: { clientId, player, timestamp },
         }
         websocket.send(JSON.stringify(playMessage))
     }
 
-    const stop = (player) => {
+    const play = (player, playEventTimestamp_MS) => {
+        const startPoint_MS = Date.now() - playEventTimestamp_MS
+        const startPoint_S = startPoint_MS / 1000
+        if (player === 1) {
+            player_A.start(Tone.now(), startPoint_S)
+            setLastStarted_MS_A(playEventTimestamp_MS)
+            setLastStartPoint_MS_A(startPoint_MS)
+        } else if (player === 2) {
+            player_B.start(Tone.now(), startPoint_S)
+            setLastStarted_MS_B(playEventTimestamp_MS)
+            setLastStartPoint_MS_B(startPoint_MS)
+        }
+    }
+
+    const handleClickStop = (player) => {
+        const timestamp = Date.now()
         if (player === 1) {
             player_A.stop()
         } else if (player === 2) {
@@ -79,7 +90,7 @@ export const App = () => {
 
         const stopMessage = {
             type: 'stop',
-            payload: { clientId, player: player },
+            payload: { clientId, player, timestamp },
         }
         websocket.send(JSON.stringify(stopMessage))
     }
@@ -94,11 +105,7 @@ export const App = () => {
         }
 
         if (type === 'play') {
-            if (payload.player === 1) {
-                play_A()
-            } else if (payload.player === 2) {
-                play_B()
-            }
+            play(payload.player, payload.timestamp)
         }
 
         if (type === 'stop') {
@@ -154,18 +161,6 @@ export const App = () => {
         }
     })
 
-    const play_A = () => {
-        player_A.start()
-        setLastStarted_MS_A(Date.now())
-        setLastStartPoint_MS_A(0)
-    }
-
-    const play_B = () => {
-        player_B.start()
-        setLastStarted_MS_B(Date.now())
-        setLastStartPoint_MS_B(0)
-    }
-
     const forward_A = (offset_MS) => {
         let now_MS = Date.now()
         const timePlayed_MS = now_MS - lastStarted_MS_A + lastStartPoint_MS_A
@@ -215,19 +210,19 @@ export const App = () => {
                             <Player
                                 onClickForward={forward_A}
                                 onClickPlay={() => {
-                                    play(1)
+                                    handleClickPlay(1)
                                 }}
                                 onClickStop={() => {
-                                    stop(1)
+                                    handleClickStop(1)
                                 }}
                             />
                             <Player
                                 onClickForward={forward_B}
                                 onClickPlay={() => {
-                                    play(2)
+                                    handleClickPlay(2)
                                 }}
                                 onClickStop={() => {
-                                    stop(2)
+                                    handleClickStop(2)
                                 }}
                             />
                         </div>
