@@ -57,11 +57,11 @@ export const App = () => {
     }
 
     const handleClickPlay = (player) => {
-        const timestamp = Date.now()
-        play(player, timestamp)
+        const timestamp_MS = Date.now()
+        play(player, timestamp_MS)
         const playMessage = {
             type: 'play',
-            payload: { clientId, player, timestamp },
+            payload: { clientId, player, timestamp: timestamp_MS },
         }
         websocket.send(JSON.stringify(playMessage))
     }
@@ -81,7 +81,7 @@ export const App = () => {
     }
 
     const handleClickStop = (player) => {
-        const timestamp = Date.now()
+        const timestamp_MS = Date.now()
         if (player === 1) {
             player_A.stop()
         } else if (player === 2) {
@@ -90,14 +90,61 @@ export const App = () => {
 
         const stopMessage = {
             type: 'stop',
-            payload: { clientId, player, timestamp },
+            payload: { clientId, player, timestamp: timestamp_MS },
         }
         websocket.send(JSON.stringify(stopMessage))
     }
 
+    const handleClickFastForward = (player, offset_MS) => {
+        const timestamp_MS = Date.now()
+        let targetPosition_MS = null
+        if (player === 1) {
+            const playbackPosition_MS_A =
+                timestamp_MS - lastStarted_MS_A + lastStartPoint_MS_A
+            let targetPosition_MS_A = playbackPosition_MS_A + offset_MS
+            fastForward(1, targetPosition_MS_A, timestamp_MS)
+            targetPosition_MS = targetPosition_MS_A
+        } else if (player === 2) {
+            const playbackPosition_MS_B =
+                timestamp_MS - lastStarted_MS_B + lastStartPoint_MS_B
+            let targetPosition_MS_B = playbackPosition_MS_B + offset_MS
+            fastForward(2, targetPosition_MS_B, timestamp_MS)
+            targetPosition_MS = targetPosition_MS_B
+        }
+
+        const fastForwardMessage = {
+            type: 'fastForward',
+            payload: {
+                clientId,
+                player,
+                targetPosition: targetPosition_MS,
+                timestamp: timestamp_MS,
+            },
+        }
+        websocket.send(JSON.stringify(fastForwardMessage))
+    }
+
+    const fastForward = (
+        player,
+        targetPosition_MS,
+        fastForwardEventTimestamp_MS
+    ) => {
+        const now_MS = Date.now()
+        const latency = now_MS - fastForwardEventTimestamp_MS
+        const seekPosition_MS = targetPosition_MS + latency
+        if (player === 1) {
+            player_A.seek(seekPosition_MS / 1000, Tone.now())
+            setLastStarted_MS_A(now_MS)
+            setLastStartPoint_MS_A(seekPosition_MS)
+        } else if (player === 2) {
+            player_B.seek(seekPosition_MS / 1000, Tone.now())
+            setLastStarted_MS_B(now_MS)
+            setLastStartPoint_MS_B(seekPosition_MS)
+        }
+    }
+
     const onMessage = (message) => {
         const { type, payload } = JSON.parse(message.data)
-        console.log(message)
 
         if (type === 'registrationSuccess') {
             setClientRegistered(true)
@@ -115,10 +162,18 @@ export const App = () => {
                 player_B.stop()
             }
         }
+
+        if (type === 'fastForward') {
+            fastForward(
+                payload.player,
+                payload.targetPosition,
+                payload.timestamp
+            )
+        }
     }
 
     useEffect(() => {
-        // Update message callback
+        // Update message callback (workaround to avoid scope issues)
         if (websocket !== null) {
             websocket.onmessage = onMessage
         }
@@ -161,24 +216,6 @@ export const App = () => {
         }
     })
 
-    const forward_A = (offset_MS) => {
-        let now_MS = Date.now()
-        const timePlayed_MS = now_MS - lastStarted_MS_A + lastStartPoint_MS_A
-        const seekPosition_MS = timePlayed_MS + offset_MS
-        player_A.seek(seekPosition_MS / 1000, Tone.now())
-        setLastStarted_MS_A(now_MS)
-        setLastStartPoint_MS_A(seekPosition_MS)
-    }
-
-    const forward_B = (offset_MS) => {
-        let now_MS = Date.now()
-        const timePlayed_MS = now_MS - lastStarted_MS_B + lastStartPoint_MS_B
-        const seekPosition_MS = timePlayed_MS + offset_MS
-        player_B.seek(seekPosition_MS / 1000, Tone.now())
-        setLastStarted_MS_B(now_MS)
-        setLastStartPoint_MS_B(seekPosition_MS)
-    }
-
     return (
         <div className="app_container">
             {!websocketConnected && <h1>Connecting to server...</h1>}
@@ -208,7 +245,9 @@ export const App = () => {
                     <div className="app_player_container">
                         <div className="app_players">
                             <Player
-                                onClickForward={forward_A}
+                                onClickForward={(offset_MS) => {
+                                    handleClickFastForward(1, offset_MS)
+                                }}
                                 onClickPlay={() => {
                                     handleClickPlay(1)
                                 }}
@@ -217,7 +256,9 @@ export const App = () => {
                                 }}
                             />
                             <Player
-                                onClickForward={forward_B}
+                                onClickForward={(offset_MS) => {
+                                    handleClickFastForward(2, offset_MS)
+                                }}
                                 onClickPlay={() => {
                                     handleClickPlay(2)
                                 }}
