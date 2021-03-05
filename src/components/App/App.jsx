@@ -14,8 +14,8 @@ export const App = () => {
     const [websocketConnected, setWebsocketConnected] = useState(false)
     const [websocket, setWebsocket] = useState(null)
 
-    const [crossFade, setCrossFade] = useState(null)
-    const [fade, setFade] = useState(50)
+    const [crossFader, setCrossFader] = useState(null)
+    const [crossFaderPosition, setCrossFaderPosition] = useState(50)
 
     const [player_A, setPlayer_A] = useState(null)
     const [loading_A, setLoading_A] = useState(false)
@@ -143,6 +143,23 @@ export const App = () => {
         }
     }
 
+    const handleClickCrossFade = (position) => {
+        crossFade(position)
+        const crossFadeMessage = {
+            type: 'crossFade',
+            payload: {
+                clientId,
+                position,
+            },
+        }
+        websocket.send(JSON.stringify(crossFadeMessage))
+    }
+
+    const crossFade = (position) => {
+        crossFader.fade.value = position / 100
+        setCrossFaderPosition(position)
+    }
+
     const onMessage = (message) => {
         const { type, payload } = JSON.parse(message.data)
 
@@ -170,6 +187,10 @@ export const App = () => {
                 payload.timestamp
             )
         }
+
+        if (type === 'crossFade') {
+            crossFade(payload.position)
+        }
     }
 
     useEffect(() => {
@@ -179,23 +200,23 @@ export const App = () => {
         }
     })
 
-    const initCrossFade = () => {
-        if (crossFade === null) {
-            const newCrossFade = new Tone.CrossFade(0.5).toDestination()
-            setCrossFade(newCrossFade)
+    const initCrossFader = () => {
+        if (crossFader === null) {
+            const newCrossFader = new Tone.CrossFade(0.5).toDestination()
+            setCrossFader(newCrossFader)
         }
     }
 
     useEffect(() => {
-        if (player_A === null && crossFade !== null) {
+        if (player_A === null && crossFader !== null) {
             const newPlayer = new Tone.Player()
-            newPlayer.connect(crossFade.a)
+            newPlayer.connect(crossFader.a)
             setPlayer_A(newPlayer)
         }
 
-        if (player_B === null && crossFade !== null) {
+        if (player_B === null && crossFader !== null) {
             const newPlayer = new Tone.Player()
-            newPlayer.connect(crossFade.b)
+            newPlayer.connect(crossFader.b)
             setPlayer_B(newPlayer)
         }
 
@@ -224,8 +245,8 @@ export const App = () => {
                 <button
                     className="app_button_start"
                     onClick={() => {
-                        if (crossFade === null) {
-                            initCrossFade()
+                        if (crossFader === null) {
+                            initCrossFader()
                         }
                         registerClient()
                     }}
@@ -236,7 +257,7 @@ export const App = () => {
 
             {loading_A || loading_B ? <h1>Loading...</h1> : <React.Fragment />}
 
-            {crossFade !== null &&
+            {crossFader !== null &&
                 clientRegistered &&
                 !loading_A &&
                 !loading_B &&
@@ -272,10 +293,11 @@ export const App = () => {
                             type="range"
                             min="0"
                             max="100"
-                            value={fade}
+                            value={crossFaderPosition}
                             onChange={(event) => {
-                                crossFade.fade.value = event.target.value / 100
-                                setFade(event.target.value)
+                                handleClickCrossFade(
+                                    parseInt(event.target.value)
+                                )
                             }}
                         ></input>
                     </div>
