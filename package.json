@@ -1,11 +1,11 @@
 {
-    "name": "b2b-prototype-frontend",
+    "name": "ws-playback-sync-frontend",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
         "build": "parcel build index.html",
-        "dev": "parcel index.html -p 8080"
+        "start": "parcel index.html -p 8080"
     },
     "author": "",
     "license": "ISC",

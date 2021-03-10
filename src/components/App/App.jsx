@@ -36,8 +36,11 @@ export const App = () => {
             connectingWebsocket === false
         ) {
             setConnectingWebsocket(true)
+            const webSocketEndpoint = process.env.WS_ENDPOINT
             const newSocket = new WebSocket(
-                'ws://damp-bastion-56176.herokuapp.com/websocket'
+                webSocketEndpoint !== undefined
+                    ? webSocketEndpoint
+                    : 'ws://localhost:8000'
             )
             newSocket.onopen = () => {
                 setConnectingWebsocket(false)
