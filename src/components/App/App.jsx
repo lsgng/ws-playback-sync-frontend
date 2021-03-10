@@ -36,7 +36,9 @@ export const App = () => {
             connectingWebsocket === false
         ) {
             setConnectingWebsocket(true)
-            const newSocket = new WebSocket('ws://localhost:1234/websocket')
+            const newSocket = new WebSocket(
+                'ws://damp-bastion-56176.herokuapp.com/websocket'
+            )
             newSocket.onopen = () => {
                 setConnectingWebsocket(false)
                 setWebsocketConnected(true)
