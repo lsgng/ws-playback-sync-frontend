@@ -1,0 +1,21 @@
+button:focus {
+    outline: 0;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.button {
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    width: 120px;
+    height: 60px;
+    margin: 10px;
+}

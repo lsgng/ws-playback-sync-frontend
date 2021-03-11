@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from '../Button/Button'
 import './Player.css'
 
 export interface PlayerProps {
@@ -14,30 +15,36 @@ export const Player: React.FC<PlayerProps> = ({
 }) => (
     <div className="player">
         <div>
-            <button className="player_button_play" onClick={onClickPlay}>
-                Play
-            </button>
-            <button className="player_button_stop" onClick={onClickStop}>
-                Stop
-            </button>
+            <Button
+                background="green"
+                color="white"
+                onClick={onClickPlay}
+                text="Play"
+            />
+            <Button
+                background="red"
+                color="white"
+                onClick={onClickStop}
+                text="Stop"
+            />
         </div>
         <div>
-            <button
-                className="player_button_forward"
+            <Button
+                background="lightgrey"
+                color="black"
                 onClick={() => {
                     onClickForward(25)
                 }}
-            >
-                +25 ms
-            </button>
-            <button
-                className="player_button_forward"
+                text="+25 ms"
+            />
+            <Button
+                background="lightgrey"
+                color="black"
                 onClick={() => {
                     onClickForward(100)
                 }}
-            >
-                +100 ms
-            </button>
+                text="+100 ms"
+            />
         </div>
     </div>
 )

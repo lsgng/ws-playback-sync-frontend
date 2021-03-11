@@ -3,7 +3,7 @@ export enum PlayerID {
     B,
 }
 
-export interface WebsocketMessage {
+export interface WebSocketMessage {
     data: string
 }
 
