@@ -78,7 +78,7 @@ export const App: React.FC = () => {
         }
     })
 
-    // Initialite WebSocket connection
+    // Initialize WebSocket connection
     useEffect(() => {
         if (
             webSocket === null &&
